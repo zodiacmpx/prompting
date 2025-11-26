@@ -1,267 +1,250 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Contexto Operacional previo al Análisis de Resultados</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: "Montserrat", Arial, sans-serif;
-      background: #f3f5fa;
-      display: flex;
-      justify-content: center;
-      padding: 20px;
-      color: #12406a;
-    }
-    .slide {
-      width: 960px;              /* formato más cercano a PPT 16:9 */
-      height: 540px;
-      background: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-      padding: 18px 22px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-    }
-    .slide-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    .slide-title {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      color: #12406a;
-      text-transform: uppercase;
-    }
-    .logo-placeholder {
-      width: 130px;
-      height: 32px;
-      border-radius: 8px;
-      border: 2px solid #004b9b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: 600;
-      color: #004b9b;
-    }
-    .blue-strip {
-      margin-bottom: 10px;
-      background: #004b9b;
-      color: #ffffff;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .blue-strip-icon {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 2px solid #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contexto Operacional Saesa</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
-    /* zona principal: 3 bloques arriba, 2 abajo */
-    .top-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 10px;
-      flex: 1;
-    }
-    .card {
-      background: #ffffff;
-      border-radius: 10px;
-      border: 1px dashed #c1b2f0;
-      padding: 8px 10px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .card-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: #004b9b;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-    .card-subtitle {
-      font-size: 10px;
-      color: #8e59d0;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 4px;
-    }
-    .card ul {
-      list-style: disc;
-      padding-left: 14px;
-    }
-    .card li {
-      font-size: 10px;
-      line-height: 1.35;
-      color: #4b4b4b;
-      margin-bottom: 3px;
-    }
-    .fake-chart {
-      background: #e6f0fb;
-      border-radius: 8px;
-      border: 1px solid rgba(0,75,155,0.25);
-      height: 70px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      color: #004b9b;
-      margin-top: 4px;
-    }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Roboto', sans-serif;
+        }
 
-    .bottom-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-    .badge {
-      display: inline-block;
-      background: #e6f0fb;
-      color: #004b9b;
-      font-size: 9px;
-      font-weight: 700;
-      padding: 3px 6px;
-      border-radius: 12px;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    .bottom-card li { font-size: 10px; }
+        .slide {
+            width: 1280px;
+            height: 720px;
+            background-color: white;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-    .highlight-footer {
-      background: #004b9b;
-      color: #ffffff;
-      font-size: 10px;
-      border-radius: 8px;
-      padding: 6px 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .highlight-footer span.icon {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      border: 2px solid #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: 700;
-    }
-  </style>
+        /* HEADER */
+        .header {
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #004B93;
+        }
+
+        .header h1 {
+            color: #004B93;
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #004B93;
+        }
+        .logo span { color: #662D91; }
+
+        /* CONTENIDO PRINCIPAL - GRID DE 3 COLUMNAS */
+        .content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr 1.1fr; /* Columna Izq más ancha para gráficos */
+            gap: 25px;
+            padding: 30px 50px;
+            background-color: #f8f9fa;
+        }
+
+        /* ESTILOS COMUNES DE TARJETAS */
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            text-transform: uppercase;
+        }
+
+        ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+        li {
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* COLUMNA 1: REALIDAD Y GRÁFICOS */
+        .col-left .card {
+            height: 100%;
+            border-top: 5px solid #004B93; /* Azul */
+        }
+        .col-left .card-title { color: #004B93; }
+        
+        .chart-container {
+            margin-top: auto; /* Empuja gráficos al fondo */
+            background: #f0f4f8;
+            border-radius: 6px;
+            padding: 10px;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed #cbd5e0;
+            position: relative;
+        }
+        .chart-label {
+            position: absolute;
+            color: #8898aa;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* COLUMNA 2: EL PROBLEMA (CENTRO) */
+        .col-center {
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centrado verticalmente */
+        }
+        .col-center .card {
+            border-top: 5px solid #d32f2f; /* Rojo */
+            background-color: #fff5f5; /* Fondo rojizo suave */
+            padding: 30px 20px;
+        }
+        .col-center .card-title { color: #d32f2f; }
+        
+        .highlight-problem {
+            font-weight: bold;
+            color: #b71c1c;
+        }
+
+        /* COLUMNA 3: SOLUCIONES (DERECHA) */
+        .col-right {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .solution-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            flex: 1;
+            border-left: 5px solid #2e7d32; /* Verde lateral */
+        }
+        .solution-title {
+            color: #2e7d32;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 15px;
+            text-transform: uppercase;
+        }
+
+        /* FOOTER */
+        .footer-bar {
+            background-color: #004B93;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+    </style>
 </head>
 <body>
-  <div class="slide">
-    <!-- Header -->
-    <div class="slide-header">
-      <div class="slide-title">
-        CONTEXTO OPERACIONAL PREVIO AL ANÁLISIS DE RESULTADOS
-      </div>
-      <div class="logo-placeholder">Logo Grupo Saesa</div>
-    </div>
 
-    <!-- Barra azul -->
-    <div class="blue-strip">
-      <div class="blue-strip-icon">i</div>
-      <div>Marco previo al indicador de concurrencia y a los resultados de la siguiente lámina.</div>
-    </div>
-
-    <!-- 3 bloques principales -->
-    <div class="top-grid">
-      <!-- Bloque 1 -->
-      <div class="card">
-        <div>
-          <div class="card-title">1. Realidad operacional por zona</div>
-          <div class="card-subtitle">Heterogeneidad zonal</div>
-          <ul>
-            <li>Dotación de brigadas distinta por zonal.</li>
-            <li>Comunas con alta carga y simultaneidad.</li>
-            <li>Distancias y geografía impactan tiempos.</li>
-          </ul>
+    <div class="slide">
+        <div class="header">
+            <h1>Contexto Operacional: Concurrencia</h1>
+            <div class="logo">grupo<span>saesa</span></div>
         </div>
-      </div>
 
-      <!-- Bloque 2 -->
-      <div class="card">
-        <div>
-          <div class="card-title">2. Problema actual del dato</div>
-          <div class="card-subtitle">Estado “En Terreno” manual</div>
-          <ul>
-            <li>Depende de que la brigada marque.</li>
-            <li>Falsos positivos y falsos negativos.</li>
-            <li>No refleja la llegada real al cliente.</li>
-          </ul>
+        <div class="content">
+            
+            <div class="col-left">
+                <div class="card">
+                    <div class="card-title">1. Realidad Operacional por Zona</div>
+                    <ul>
+                        <li><strong>Heterogeneidad Zonal:</strong> Dotación de brigadas muy distinta entre zonas.</li>
+                        <li><strong>Alta Carga:</strong> Comunas críticas con alta simultaneidad de eventos.</li>
+                        <li><strong>Geografía:</strong> Distancias y tiempos de traslado impactan la respuesta.</li>
+                    </ul>
+
+                    <div style="margin-top: 20px; font-weight: bold; font-size: 12px; color: #666;">EVIDENCIA EN DATOS (BRECHAS):</div>
+                    <div class="chart-container">
+                        <span class="chart-label">[Espacio para Gráficos: Cumplimiento y Densidad]</span>
+                        <div style="display:flex; gap:5px; align-items:flex-end; height:50%; opacity:0.5;">
+                            <div style="width:15px; height:80%; background:#004B93"></div>
+                            <div style="width:15px; height:60%; background:#004B93"></div>
+                            <div style="width:15px; height:90%; background:#004B93"></div>
+                            <div style="width:15px; height:40%; background:#d32f2f"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-center">
+                <div class="card">
+                    <div style="font-size: 30px; text-align: center; margin-bottom: 10px;">⚠️</div>
+                    <div class="card-title" style="justify-content: center;">2. Problema del Dato</div>
+                    
+                    <p style="text-align: center; font-size: 14px; margin-bottom: 20px;">
+                        El hito <strong>"En Terreno"</strong> actualmente es <span class="highlight-problem">MANUAL</span>.
+                    </p>
+                    
+                    <ul>
+                        <li>Depende 100% de que la brigada marque en la App.</li>
+                        <li>Genera <strong>Falsos Positivos</strong> (trabajan pero no marcan) y Negativos.</li>
+                        <li><strong>Consecuencia:</strong> El dato no refleja la llegada real al cliente, impidiendo medir la eficiencia verdadera.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-right">
+                
+                <div class="solution-card">
+                    <div class="solution-title">A. Corrección: Geocerca GNAT 6</div>
+                    <ul>
+                        <li>GPS Precisión &lt; 10m y registro automático.</li>
+                        <li>Marcación automática al entrar en radio de 500m.</li>
+                        <li><strong>Dato auditable</strong> para SEC, sin manualidad.</li>
+                    </ul>
+                </div>
+
+                <div class="solution-card" style="border-left-color: #662D91;"> <div class="solution-title" style="color: #662D91;">B. Optimización de Brigadas</div>
+                    <ul>
+                        <li>Redistribución basada en densidad real y eventos.</li>
+                        <li>Rutas y puntos de control más eficientes.</li>
+                        <li>Base para un despacho predictivo futuro.</li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
-      </div>
 
-      <!-- Bloque 3 con espacio para gráfico -->
-      <div class="card">
-        <div>
-          <div class="card-title">3. Dónde se ven las brechas</div>
-          <div class="card-subtitle">Gráficos de referencia</div>
-          <div class="fake-chart">
-            Aquí van “Cumplimiento Zonal” y<br>“% Cumplimiento (Densidad)”.
-          </div>
-          <ul style="margin-top:4px;">
-            <li>Comunas con menor % de cumplimiento.</li>
-            <li>Ayuda a priorizar zonas a intervenir.</li>
-          </ul>
+        <div class="footer-bar">
+            Con el dato corregido y la nueva estructura, avanzamos hacia los resultados estimados y el roadmap.
         </div>
-      </div>
     </div>
 
-    <!-- 2 bloques de solución -->
-    <div class="bottom-grid">
-      <div class="card bottom-card">
-        <div class="badge">Capa A</div>
-        <div class="card-title">Corrección del dato – Geocerca GNAT 6</div>
-        <ul>
-          <li>GPS &lt; 10 m y registro automático.</li>
-          <li>Marcación al entrar en radio de 500 m.</li>
-          <li>Dato auditable para SEC, sin manualidad.</li>
-        </ul>
-      </div>
-
-      <div class="card bottom-card">
-        <div class="badge">Capa B</div>
-        <div class="card-title">Optimización estructural de brigadas</div>
-        <ul>
-          <li>Redistribución según densidad y eventos.</li>
-          <li>Rutas y puntos de control más eficientes.</li>
-          <li>Base para un despacho más predictivo.</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Cierre -->
-    <div class="highlight-footer">
-      <span class="icon">➜</span>
-      <div>
-        Con el dato corregido y la nueva estructura de brigadas, la siguiente lámina muestra
-        los resultados estimados y el roadmap de próximos pasos.
-      </div>
-    </div>
-  </div>
 </body>
 </html>
