@@ -1,1421 +1,305 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Playbook de Prompting para IA</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <style>
-    :root {
-      --bg-main: #050816;
-      --bg-panel: rgba(15, 23, 42, 0.95);
-      --accent: #4ade80;
-      --accent-soft: rgba(74, 222, 128, 0.12);
-      --accent-2: #38bdf8;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --danger: #fb7185;
-      --danger-soft: rgba(248, 113, 113, 0.12);
-      --radius-lg: 18px;
-      --radius-md: 12px;
-      --shadow-strong: 0 18px 45px rgba(0, 0, 0, 0.6);
-      --transition-fast: 0.2s ease-out;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
-      background:
-        radial-gradient(circle at top left, #111827 0, transparent 55%),
-        radial-gradient(circle at bottom right, #0f172a 0, transparent 50%),
-        radial-gradient(circle at center, #1e293b 0, var(--bg-main) 60%);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    /* NAV SUPERIOR */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      backdrop-filter: blur(14px);
-      background: linear-gradient(
-        90deg,
-        rgba(15, 23, 42, 0.98),
-        rgba(15, 23, 42, 0.94)
-      );
-      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
-    }
-
-    .nav {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      background: conic-gradient(
-        from 160deg,
-        #4ade80,
-        #22c55e,
-        #22d3ee,
-        #6366f1,
-        #4ade80
-      );
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 18px rgba(34, 197, 94, 0.7);
-    }
-
-    .logo-icon span {
-      font-size: 20px;
-    }
-
-    .logo-text-main {
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-    }
-
-    .logo-text-sub {
-      font-size: 0.76rem;
-      color: var(--muted);
-    }
-
-    .nav-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: flex-end;
-    }
-
-    .nav-links button {
-      background: transparent;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      padding: 6px 12px;
-      font-size: 0.8rem;
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: background var(--transition-fast), transform var(--transition-fast),
-        border-color var(--transition-fast);
-    }
-
-    .nav-links button:hover {
-      background: rgba(15, 23, 42, 0.9);
-      transform: translateY(-1px);
-      border-color: var(--accent-2);
-    }
-
-    /* HERO */
-    .hero {
-      max-width: 1200px;
-      margin: 25px auto 0;
-      padding: 0 20px 28px;
-      display: grid;
-      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.9fr);
-      gap: 24px;
-      align-items: stretch;
-    }
-
-    @media (max-width: 900px) {
-      .hero {
-        grid-template-columns: minmax(0, 1fr);
-      }
-      .nav {
-        flex-wrap: wrap;
-      }
-    }
-
-    .hero-main {
-      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.2), transparent 55%),
-        var(--bg-panel);
-      border-radius: 24px;
-      padding: 24px 22px 26px;
-      box-shadow: var(--shadow-strong);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-main::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image: radial-gradient(
-          circle at 20% 0,
-          rgba(74, 222, 128, 0.18),
-          transparent 55%
-        ),
-        radial-gradient(circle at 80% 100%, rgba(59, 130, 246, 0.2), transparent 55%);
-      opacity: 0.6;
-      mix-blend-mode: screen;
-      pointer-events: none;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(15, 23, 42, 0.86);
-      border-radius: 999px;
-      padding: 5px 10px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      font-size: 0.78rem;
-      margin-bottom: 10px;
-    }
-
-    .hero-pill span.badge {
-      background: rgba(34, 197, 94, 0.2);
-      border-radius: 999px;
-      padding: 2px 8px;
-      font-size: 0.7rem;
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .hero-title {
-      font-size: clamp(1.9rem, 3.2vw, 2.4rem);
-      font-weight: 800;
-      margin: 2px 0 8px;
-    }
-
-    .hero-title span {
-      background: linear-gradient(120deg, #4ade80, #22d3ee, #a855f7);
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    .hero-subtitle {
-      font-size: 0.95rem;
-      color: var(--muted);
-      max-width: 540px;
-    }
-
-    .hero-grid {
-      margin-top: 16px;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .hero-chip {
-      background: rgba(15, 23, 42, 0.8);
-      border-radius: 14px;
-      padding: 8px 10px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      font-size: 0.75rem;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .hero-chip span.label {
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-    }
-
-    .hero-chip span.value {
-      font-size: 0.86rem;
-      font-weight: 600;
-    }
-
-    .hero-footer {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 16px;
-      align-items: center;
-    }
-
-    .btn-primary,
-    .btn-ghost {
-      border-radius: 999px;
-      padding: 9px 14px;
-      font-size: 0.86rem;
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast),
-        background var(--transition-fast), opacity 0.15s ease-out;
-      white-space: nowrap;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #22c55e, #22d3ee);
-      box-shadow: 0 12px 30px rgba(34, 197, 94, 0.55);
-      color: #022c22;
-      font-weight: 600;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 18px 40px rgba(34, 197, 94, 0.55);
-    }
-
-    .btn-ghost {
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.8);
-      color: var(--text);
-    }
-
-    .btn-ghost:hover {
-      background: rgba(15, 23, 42, 1);
-      transform: translateY(-1px);
-      border-color: var(--accent-2);
-    }
-
-    .hero-footer small {
-      font-size: 0.76rem;
-      color: var(--muted);
-    }
-
-    /* PANEL LATERAL HERO */
-    .hero-side {
-      background: rgba(15, 23, 42, 0.96);
-      border-radius: 24px;
-      padding: 22px 20px;
-      box-shadow: var(--shadow-strong);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .hero-side-title {
-      font-size: 0.96rem;
-      font-weight: 600;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .hero-side-title span {
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .timeline {
-      border-radius: 14px;
-      padding: 12px 10px;
-      background: radial-gradient(
-        circle at 20% 0,
-        rgba(56, 189, 248, 0.23),
-        transparent 60%
-      );
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      position: relative;
-    }
-
-    .timeline::before {
-      content: "";
-      position: absolute;
-      left: 18px;
-      top: 10px;
-      bottom: 10px;
-      width: 2px;
-      background: linear-gradient(to bottom, #4ade80, #22d3ee);
-      opacity: 0.7;
-    }
-
-    .timeline-step {
-      position: relative;
-      padding-left: 40px;
-      margin-bottom: 10px;
-    }
-
-    .timeline-dot {
-      position: absolute;
-      left: 12px;
-      top: 4px;
-      width: 12px;
-      height: 12px;
-      border-radius: 999px;
-      background: #0f172a;
-      border: 2px solid #4ade80;
-    }
-
-    .timeline-step h4 {
-      margin: 0;
-      font-size: 0.9rem;
-    }
-
-    .timeline-step p {
-      margin: 2px 0 0;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .hero-side-footer {
-      margin-top: 4px;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    /* CONTENIDO PRINCIPAL */
-    main {
-      max-width: 1200px;
-      margin: 0 auto 50px;
-      padding: 0 20px 40px;
-    }
-
-    .section {
-      margin-top: 26px;
-      display: grid;
-      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.9fr);
-      gap: 22px;
-      align-items: flex-start;
-    }
-
-    @media (max-width: 900px) {
-      .section {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .panel {
-      background: var(--bg-panel);
-      border-radius: var(--radius-lg);
-      padding: 18px 18px 18px;
-      box-shadow: var(--shadow-strong);
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .panel h2 {
-      margin: 0 0 6px;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .panel h2 span.badge {
-      font-size: 0.72rem;
-      padding: 2px 7px;
-      border-radius: 999px;
-      background: rgba(34, 197, 94, 0.12);
-      color: var(--accent);
-      border: 1px solid rgba(74, 222, 128, 0.5);
-    }
-
-    .panel p {
-      font-size: 0.88rem;
-      color: var(--muted);
-      margin: 3px 0 8px;
-    }
-
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
-    }
-
-    .pill {
-      font-size: 0.75rem;
-      border-radius: 999px;
-      padding: 4px 9px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      background: rgba(15, 23, 42, 0.85);
-    }
-
-    /* TABS PRINCIPIOS */
-    .tabs {
-      margin-top: 12px;
-    }
-
-    .tab-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .tab-buttons button {
-      font-size: 0.8rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-      padding: 5px 10px;
-      cursor: pointer;
-      color: var(--muted);
-      transition: background var(--transition-fast), border-color var(--transition-fast),
-        color var(--transition-fast), transform var(--transition-fast);
-    }
-
-    .tab-buttons button.active {
-      background: linear-gradient(135deg, #22c55e, #22d3ee);
-      border-color: transparent;
-      color: #022c22;
-      font-weight: 600;
-      transform: translateY(-1px);
-    }
-
-    .tab-content {
-      border-radius: var(--radius-md);
-      padding: 10px 11px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      font-size: 0.86rem;
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    .tab-content ul {
-      padding-left: 18px;
-      margin: 0;
-    }
-
-    .tab-content li {
-      margin-bottom: 4px;
-    }
-
-    /* CORRECTO / INCORRECTO */
-    .row {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    @media (max-width: 700px) {
-      .row {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .correcto,
-    .incorrecto {
-      padding: 10px 11px;
-      border-radius: var(--radius-md);
-      font-size: 0.83rem;
-    }
-
-    .correcto {
-      background: var(--accent-soft);
-      border: 1px solid rgba(74, 222, 128, 0.7);
-    }
-
-    .incorrecto {
-      background: var(--danger-soft);
-      border: 1px solid rgba(248, 113, 113, 0.7);
-    }
-
-    .correcto strong,
-    .incorrecto strong {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 0.85rem;
-    }
-
-    .correcto p,
-    .incorrecto p {
-      margin: 0 0 2px;
-      color: #e5e7eb;
-    }
-
-    .tag {
-      display: inline-block;
-      padding: 1px 7px;
-      font-size: 0.7rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.8);
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    /* CONSTRUCTOR DE PROMPTS */
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    @media (max-width: 800px) {
-      .form-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    label {
-      font-size: 0.82rem;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    input[type="text"],
-    select,
-    textarea {
-      width: 100%;
-      border-radius: 10px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: #020617;
-      padding: 7px 9px;
-      font-size: 0.85rem;
-      color: var(--text);
-      resize: vertical;
-      min-height: 34px;
-    }
-
-    textarea {
-      min-height: 60px;
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-      color: rgba(148, 163, 184, 0.7);
-    }
-
-    .prompt-output {
-      margin-top: 10px;
-      border-radius: var(--radius-md);
-      padding: 10px 11px;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px dashed rgba(148, 163, 184, 0.7);
-      font-size: 0.83rem;
-      max-height: 220px;
-      overflow-y: auto;
-    }
-
-    .btn-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .btn-secondary {
-      padding: 7px 11px;
-      font-size: 0.8rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.75);
-      background: rgba(15, 23, 42, 0.95);
-      color: var(--text);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background var(--transition-fast), transform var(--transition-fast),
-        border-color var(--transition-fast);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(15, 23, 42, 1);
-      transform: translateY(-1px);
-      border-color: var(--accent-2);
-    }
-
-    .hint {
-      margin-top: 4px;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    /* ANALIZADOR */
-    .badge-mini {
-      padding: 1px 6px;
-      border-radius: 999px;
-      font-size: 0.7rem;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      color: var(--muted);
-      margin-left: 6px;
-    }
-
-    .analysis-result {
-      margin-top: 8px;
-      border-radius: var(--radius-md);
-      padding: 9px 10px;
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      font-size: 0.83rem;
-    }
-
-    .analysis-result ul {
-      margin: 4px 0 0;
-      padding-left: 16px;
-    }
-
-    .analysis-result li {
-      margin-bottom: 3px;
-    }
-
-    .badge-ok {
-      color: #4ade80;
-    }
-
-    .badge-warn {
-      color: #facc15;
-    }
-
-    .badge-bad {
-      color: #fb7185;
-    }
-
-    /* BIBLIOTECA */
-    .usecase-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    @media (max-width: 800px) {
-      .usecase-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .usecase-card {
-      border-radius: var(--radius-md);
-      padding: 10px 11px;
-      background: rgba(15, 23, 42, 0.92);
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      font-size: 0.82rem;
-      position: relative;
-    }
-
-    .usecase-card h3 {
-      margin: 0 0 4px;
-      font-size: 0.9rem;
-    }
-
-    .usecase-card p {
-      margin: 0 0 4px;
-      color: var(--muted);
-    }
-
-    .prompt-snippet {
-      margin-top: 4px;
-      padding: 6px 7px;
-      border-radius: 8px;
-      background: #020617;
-      border: 1px dashed rgba(148, 163, 184, 0.8);
-      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco,
-        Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 0.78rem;
-      max-height: 140px;
-      overflow-y: auto;
-    }
-
-    .usecase-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 4px;
-      font-size: 0.74rem;
-      color: var(--muted);
-    }
-
-    /* QUIZ */
-    .quiz-item {
-      margin-top: 8px;
-      border-radius: var(--radius-md);
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.96);
-      padding: 8px 10px;
-      font-size: 0.83rem;
-    }
-
-    .quiz-options {
-      margin-top: 6px;
-      display: grid;
-      gap: 6px;
-    }
-
-    .quiz-option {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      padding: 5px 9px;
-      cursor: pointer;
-      transition: background var(--transition-fast), border-color var(--transition-fast),
-        transform var(--transition-fast);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .quiz-option span.label {
-      font-size: 0.8rem;
-    }
-
-    .quiz-option:hover {
-      transform: translateY(-1px);
-    }
-
-    .quiz-option.correct {
-      background: rgba(34, 197, 94, 0.18);
-      border-color: #4ade80;
-    }
-
-    .quiz-option.incorrect {
-      background: rgba(248, 113, 113, 0.16);
-      border-color: #fb7185;
-    }
-
-    .quiz-feedback {
-      margin-top: 4px;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    /* FOOTER */
-    footer {
-      text-align: center;
-      padding: 18px 14px 30px;
-      font-size: 0.76rem;
-      color: var(--muted);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta Diapositiva Saesa</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+        /* Configuración General para simular una diapositiva 16:9 */
+        body {
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            background-color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Cabecera */
+        .header {
+            background-color: #ffffff;
+            border-bottom: 4px solid #004B93; /* Azul Saesa */
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #004B93;
+            font-size: 28px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .header h2 {
+            color: #555;
+            font-size: 16px;
+            margin: 5px 0 0 0;
+            font-weight: 300;
+        }
+
+        .logo {
+            font-weight: bold;
+            color: #004B93;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            color: #662D91; /* Morado Saesa */
+            margin-left: 5px;
+        }
+
+        /* Contenido Principal - Layout de 3 Columnas */
+        .content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1.2fr;
+            gap: 20px;
+            padding: 30px 40px;
+            background: linear-gradient(to bottom, #ffffff, #f9fbfd);
+        }
+
+        /* Estilos de las Tarjetas/Columnas */
+        .column {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .col-title {
+            font-size: 18px;
+            color: #004B93;
+            font-weight: 700;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        /* Columna 1: Análisis Zonal */
+        .chart-placeholder {
+            background-color: #f4f6f8;
+            border: 1px dashed #ccc;
+            height: 120px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #888;
+            font-size: 12px;
+            flex-direction: column;
+        }
+        
+        .mini-chart-bar {
+            display: flex; 
+            align-items: flex-end; 
+            gap: 5px; 
+            height: 60%;
+        }
+        .bar { width: 10px; background: #5daeea; }
+
+        .analysis-text {
+            font-size: 13px;
+            color: #444;
+            line-height: 1.5;
+        }
+        .highlight-bad { color: #d32f2f; font-weight: bold; }
+
+        /* Columna 2: El Problema (Centro) */
+        .column-center {
+            border: 2px solid #ffcc00; /* Alerta */
+            background-color: #fffdf5;
+            position: relative;
+        }
+
+        .alert-icon {
+            font-size: 30px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .problem-box {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #d32f2f;
+        }
+
+        .problem-title {
+            font-weight: bold;
+            color: #d32f2f;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .problem-desc {
+            font-size: 13px;
+            color: #555;
+        }
+
+        /* Columna 3: Solución */
+        .column-right {
+            border-top: 4px solid #00c853; /* Verde éxito */
+        }
+
+        .solution-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .solution-list li {
+            background-color: #e8f5e9;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            color: #2e7d32;
+        }
+
+        .solution-list li::before {
+            content: "✔";
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .arrow-container {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        
+        .arrow-right {
+             width: 0; 
+             height: 0; 
+             border-top: 10px solid transparent;
+             border-bottom: 10px solid transparent;
+             border-left: 15px solid #ccc;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #004B93;
+            color: white;
+            padding: 10px 40px;
+            font-size: 12px;
+            text-align: right;
+            display: flex;
+            justify-content: space-between;
+        }
+
+    </style>
 </head>
 <body>
-  <!-- NAV SUPERIOR -->
-  <header>
-    <div class="nav">
-      <div class="logo">
-        <div class="logo-icon">
-          <span>🤖</span>
+
+    <div class="slide-container">
+        <div class="header">
+            <div>
+                <h1>Diagnóstico Operativo: Hacia la Automatización</h1>
+                <h2>Del reporte manual a la gestión basada en datos reales</h2>
+            </div>
+            <div class="logo">grupo<span>saesa</span></div>
         </div>
-        <div>
-          <div class="logo-text-main">Playbook de Prompting IA</div>
-          <div class="logo-text-sub">Diseñado para WhatsApp, chats y asistentes</div>
+
+        <div class="content">
+            
+            <div class="column">
+                <div class="col-title">1. Realidad Zonal Actual</div>
+                
+                <div class="chart-placeholder">
+                    <div class="mini-chart-bar">
+                        <div class="bar" style="height: 40px"></div>
+                        <div class="bar" style="height: 60px"></div>
+                        <div class="bar" style="height: 30px; background:#d32f2f"></div>
+                        <div class="bar" style="height: 50px"></div>
+                        <div class="bar" style="height: 20px; background:#d32f2f"></div>
+                    </div>
+                    <span style="margin-top:5px">Variabilidad de Cumplimiento</span>
+                </div>
+
+                <div class="analysis-text">
+                    <p>• <strong>Alta Variabilidad:</strong> Zonas con indicadores críticos (ej. Tomé, Lota) presentan brechas significativas vs. promedio.</p>
+                    <p>• <strong>Factor Estrés:</strong> Alta densidad de eventos y situaciones simultáneas saturan la capacidad de respuesta actual.</p>
+                    <p>• <strong>Distribución:</strong> La flota actual no responde dinámicamente a estos picos de demanda.</p>
+                </div>
+            </div>
+
+            <div class="column column-center">
+                <div class="col-title" style="color:#d32f2f; border-color:#d32f2f">2. El Punto Ciego</div>
+                
+                <div class="alert-icon">⚠️</div>
+                
+                <div class="analysis-text" style="text-align: center; margin-bottom: 15px;">
+                    <em>"No podemos gestionar lo que medimos con error"</em>
+                </div>
+
+                <div class="problem-box">
+                    <div class="problem-title">El Problema de la "Manualidad"</div>
+                    <div class="problem-desc">La dependencia de que la brigada pulse "En Terreno" genera datos erróneos.</div>
+                </div>
+
+                <div class="problem-box">
+                    <div class="problem-title">Falsos Positivos de Incumplimiento</div>
+                    <div class="problem-desc">Brigadas trabajando que figuran en viaje. Genera "tiempos muertos" digitales que impiden dimensionar la falta real de recursos.</div>
+                </div>
+            </div>
+
+            <div class="column column-right">
+                <div class="col-title" style="color:#2e7d32; border-color:#2e7d32">3. Solución y Futuro</div>
+                
+                <p class="analysis-text">La tecnología <strong>Geocerca</strong> no es solo control, es el habilitador para la reestructuración:</p>
+
+                <ul class="solution-list">
+                    <li>
+                        <strong>Dato 100% Auditable:</strong><br>
+                        Eliminación del factor humano en el registro de tiempos.
+                    </li>
+                    <li>
+                        <strong>Visibilidad Real:</strong><br>
+                        Diferenciación exacta entre tiempo de traslado y tiempo de trabajo efectivo.
+                    </li>
+                    <li>
+                        <strong>Reestructuración de Flota:</strong><br>
+                        Con datos limpios, podemos redimensionar brigadas basándonos en ubicación óptima y demanda real.
+                    </li>
+                </ul>
+                
+                <div style="margin-top:auto; background:#004B93; color:white; padding:10px; text-align:center; border-radius:4px; font-size:14px;">
+                    Próximo paso: Resultados Piloto
+                </div>
+            </div>
+
         </div>
-      </div>
-      <div class="nav-links">
-        <button onclick="scrollToSection('fundamentos')">Fundamentos</button>
-        <button onclick="scrollToSection('constructor')">Constructor</button>
-        <button onclick="scrollToSection('analizador')">Analizador</button>
-        <button onclick="scrollToSection('biblioteca')">Biblioteca</button>
-        <button onclick="scrollToSection('practica')">Práctica</button>
-      </div>
+
+        <div class="footer">
+            <span>Gerencia de Operaciones</span>
+            <span>Estrategia de Evolución Tecnológica 2025-2026</span>
+        </div>
     </div>
-  </header>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-main">
-      <div class="hero-content">
-        <div class="hero-pill">
-          <span class="badge">Nivel Pro</span>
-          Playbook interactivo para hablar con la IA como un experto.
-        </div>
-        <h1 class="hero-title">
-          Convierte instrucciones normales en <span>respuestas brillantes</span>.
-        </h1>
-        <p class="hero-subtitle">
-          Aprende a estructurar prompts claros, específicos y accionables para que la IA
-          te entienda a la primera, sin dar mil vueltas.
-        </p>
-
-        <div class="hero-grid">
-          <div class="hero-chip">
-            <span class="label">Tiempo de dominio</span>
-            <span class="value">30 minutos</span>
-          </div>
-          <div class="hero-chip">
-            <span class="label">Formato</span>
-            <span class="value">Guía + Taller interactivo</span>
-          </div>
-          <div class="hero-chip">
-            <span class="label">Ideal para</span>
-            <span class="value">WhatsApp, soporte, estudio y trabajo</span>
-          </div>
-        </div>
-
-        <div class="hero-footer">
-          <button class="btn-primary" onclick="scrollToSection('constructor')">
-            ✨ Construir mi primer super-prompt
-          </button>
-          <button class="btn-ghost" onclick="scrollToSection('fundamentos')">
-            Ver fundamentos
-          </button>
-          <small>Tip: úsalo como “manual rápido” cada vez que hables con la IA.</small>
-        </div>
-      </div>
-    </div>
-
-    <aside class="hero-side">
-      <div class="hero-side-title">
-        <span>Ruta rápida de un buen prompt</span>
-        <span>4 pasos</span>
-      </div>
-      <div class="timeline">
-        <div class="timeline-step">
-          <div class="timeline-dot"></div>
-          <h4>1. Define el objetivo</h4>
-          <p>“¿Qué quiero exactamente de la IA?” Un resultado, no una acción vaga.</p>
-        </div>
-        <div class="timeline-step">
-          <div class="timeline-dot"></div>
-          <h4>2. Da contexto</h4>
-          <p>Cuenta la situación, a quién va dirigido y qué ya probaste.</p>
-        </div>
-        <div class="timeline-step">
-          <div class="timeline-dot"></div>
-          <h4>3. Especifica el formato</h4>
-          <p>Lista, tabla, mensaje de WhatsApp, mini-guion, etc.</p>
-        </div>
-        <div class="timeline-step">
-          <div class="timeline-dot"></div>
-          <h4>4. Ajusta el estilo</h4>
-          <p>Tono profesional, cercano, motivador, técnico, etc.</p>
-        </div>
-      </div>
-      <div class="hero-side-footer">
-        Usa esta ruta como checklist mental cada vez que le escribas a la IA.
-      </div>
-    </aside>
-  </section>
-
-  <main>
-    <!-- FUNDAMENTOS -->
-    <section class="section" id="fundamentos">
-      <article class="panel">
-        <h2>
-          Fundamentos del Prompting
-          <span class="badge">Teoría corta</span>
-        </h2>
-        <p>
-          Un <strong>prompt</strong> es la forma en que conversas con la IA. No es solo
-          “hacer una pregunta”: es explicarle el contexto, el objetivo, el formato deseado
-          y cómo quieres que piense. Mientras más claro seas, menos tendrás que corregir.
-        </p>
-
-        <div class="pill-row">
-          <div class="pill">Habla en <strong>segunda persona</strong> (“tú”).</div>
-          <div class="pill">Pide acciones <strong>concretas</strong>, no vagas.</div>
-          <div class="pill">Da ejemplos de lo que <strong>sí</strong> y <strong>no</strong> quieres.</div>
-        </div>
-
-        <div class="tabs">
-          <div class="tab-buttons">
-            <button class="tab-btn active" data-tab="tab1">Estructura base</button>
-            <button class="tab-btn" data-tab="tab2">Tono y estilo</button>
-            <button class="tab-btn" data-tab="tab3">Contexto y límites</button>
-          </div>
-          <div class="tab-content active" id="tab1">
-            <ul>
-              <li><strong>Rol:</strong> dile a la IA quién debe “ser” (profesor, analista, psicólogo, etc.).</li>
-              <li><strong>Objetivo:</strong> qué resultado concreto quieres obtener.</li>
-              <li><strong>Contexto:</strong> información clave para que no invente ni se pierda.</li>
-              <li><strong>Formato:</strong> cómo quieres la respuesta (tabla, puntos, mensaje, script…).</li>
-              <li><strong>Restricciones:</strong> límite de palabras, idioma, nivel de detalle, etc.</li>
-            </ul>
-          </div>
-          <div class="tab-content" id="tab2">
-            <ul>
-              <li>
-                Usa frases como:
-                <em>“Hazlo en tono cercano pero respetuoso”</em> o
-                <em>“Respóndeme como un experto que explica a un principiante”</em>.
-              </li>
-              <li>
-                Especifica si quieres que:
-                <strong>simplifique</strong>, <strong>profundice</strong> o solo
-                <strong>resuma</strong>.
-              </li>
-              <li>
-                Si es para WhatsApp, dile:
-                <em>“Redacta el mensaje como si fuera para enviar tal cual por WhatsApp”</em>.
-              </li>
-            </ul>
-          </div>
-          <div class="tab-content" id="tab3">
-            <ul>
-              <li>No tengas miedo de imponer reglas: <em>“No inventes datos si no los sabes”</em>.</li>
-              <li>Da fechas, nombres y contexto real: eso reduce respuestas genéricas.</li>
-              <li>Si algo es sensible, aclara el límite: <em>“Solo quiero orientación general, no diagnóstico”</em>.</li>
-            </ul>
-          </div>
-        </div>
-      </article>
-
-      <article class="panel">
-        <h2>Segunda persona y ejemplos</h2>
-        <p>
-          Hablarle directamente a la IA (“tú vas a…”) ayuda a que interprete mejor lo que
-          esperas. Observa la diferencia:
-        </p>
-
-        <div class="row">
-          <div class="correcto">
-            <strong>✅ Correcto</strong>
-            <p>“Tú vas a analizar este chat y resumir en 5 ideas principales.”</p>
-            <p>“Debes proponer tres opciones de respuesta corta para WhatsApp.”</p>
-            <span class="tag">Acción directa</span>
-          </div>
-          <div class="incorrecto">
-            <strong>❌ Incorrecto</strong>
-            <p>“El bot debe analizar el chat y sacar ideas principales.”</p>
-            <p>“El agente podría darme algunas respuestas si es posible.”</p>
-            <span class="tag">Vago, impersonal</span>
-          </div>
-        </div>
-
-        <p style="margin-top:10px;">
-          Cuando dudes, reescribe tu prompt como si le hablaras a una persona que trabaja
-          contigo. Si lo entiende un humano, la IA también.
-        </p>
-      </article>
-    </section>
-
-    <!-- CONSTRUCTOR -->
-    <section class="section" id="constructor">
-      <article class="panel">
-        <h2>
-          Taller: Constructor de Super-Prompts
-          <span class="badge">Interactivo</span>
-        </h2>
-        <p>
-          Completa los campos y genera un prompt bien armado para copiar y pegar en tu
-          chat con la IA.
-        </p>
-
-        <div class="form-grid">
-          <div>
-            <label>Rol de la IA</label>
-            <input
-              type="text"
-              id="rol"
-              placeholder="Ej: Eres un profesor paciente de matemáticas de nivel básico."
-            />
-          </div>
-          <div>
-            <label>Objetivo</label>
-            <input
-              type="text"
-              id="objetivo"
-              placeholder="Ej: Explica este concepto con ejemplos simples."
-            />
-          </div>
-          <div>
-            <label>Contexto clave</label>
-            <textarea
-              id="contexto"
-              placeholder="Ej: Estoy preparando una prueba, mi nivel es básico, me cuesta la parte lógica..."
-            ></textarea>
-          </div>
-          <div>
-            <label>Formato de la respuesta</label>
-            <input
-              type="text"
-              id="formato"
-              placeholder="Ej: Lista numerada de 5 puntos + un ejemplo final."
-            />
-          </div>
-          <div>
-            <label>Estilo / tono</label>
-            <input
-              type="text"
-              id="tono"
-              placeholder="Ej: Cercano, motivador y fácil de entender."
-            />
-          </div>
-          <div>
-            <label>Restricciones (opcional)</label>
-            <input
-              type="text"
-              id="restricciones"
-              placeholder="Ej: Máximo 200 palabras, en español, sin tecnicismos."
-            />
-          </div>
-        </div>
-
-        <div class="btn-bar">
-          <button class="btn-secondary" onclick="generarPromptCompleto()">
-            ⚙️ Generar prompt
-          </button>
-          <button class="btn-secondary" onclick="copiarPrompt()">
-            📋 Copiar prompt
-          </button>
-          <button class="btn-secondary" onclick="limpiarFormulario()">
-            🧹 Limpiar
-          </button>
-        </div>
-
-        <div class="hint">
-          Tip: piensa en un caso real que uses a diario (WhatsApp con un cliente, estudio,
-          texto para tu pareja, etc.).
-        </div>
-
-        <div class="prompt-output" id="promptOutput">
-          Aquí aparecerá tu prompt construido paso a paso.
-        </div>
-      </article>
-
-      <!-- ANALIZADOR -->
-      <article class="panel" id="analizador">
-        <h2>
-          Analizador rápido de prompts
-          <span class="badge-mini">Beta</span>
-        </h2>
-        <p>
-          Pega un prompt que uses normalmente y te daré sugerencias para mejorarlo:
-          claridad, contexto y formato.
-        </p>
-
-        <label>Tu prompt actual</label>
-        <textarea
-          id="promptAnalizar"
-          placeholder="Ej: Explícame esto, no entiendo nada."
-        ></textarea>
-
-        <div class="btn-bar">
-          <button class="btn-secondary" onclick="analizarPrompt()">🔍 Analizar</button>
-        </div>
-
-        <div class="analysis-result" id="analysisResult">
-          Esperando un prompt para analizar…
-        </div>
-      </article>
-    </section>
-
-    <!-- BIBLIOTECA -->
-    <section class="section" id="biblioteca">
-      <article class="panel">
-        <h2>Biblioteca de prompts listos para usar</h2>
-        <p>Algunos ejemplos pensados para WhatsApp y situaciones reales:</p>
-
-        <div class="usecase-grid">
-          <div class="usecase-card">
-            <h3>1. Responder un mensaje difícil</h3>
-            <p>Cuando no sabes cómo decir algo sin herir a la otra persona.</p>
-            <div class="prompt-snippet">
-              Tú eres un asesor de comunicación empático.<br />
-              Voy a pegar un mensaje que recibí por WhatsApp. Tu tarea es:<br />
-              1) Analizar el tono emocional del mensaje.<br />
-              2) Decir qué intención crees que tiene la otra persona.<br />
-              3) Proponer 3 respuestas posibles en tono respetuoso y claro,<br />
-              que expresen mi punto de vista sin atacar.<br /><br />
-              Primero repíteme tu interpretación en 3 líneas y luego muéstrame
-              las respuestas numeradas.
-            </div>
-            <div class="usecase-meta">
-              <span>Uso: conversaciones personales</span>
-              <span>✨ Emocional</span>
-            </div>
-          </div>
-
-          <div class="usecase-card">
-            <h3>2. Estudiar un tema complejo</h3>
-            <p>Transformar un contenido difícil en algo manejable.</p>
-            <div class="prompt-snippet">
-              Tú eres un profesor paciente especializado en explicar temas difíciles.<br />
-              Te voy a pegar un texto sobre [tema].<br />
-              Tu tarea es:<br />
-              - Resumirlo en máximo 8 puntos clave.<br />
-              - Crear 3 analogías simples para alguien que recién empieza.<br />
-              - Generar 5 preguntas tipo quiz para comprobar si entendí.<br /><br />
-              Usa ejemplos cotidianos y evita tecnicismos innecesarios.
-            </div>
-            <div class="usecase-meta">
-              <span>Uso: estudio / universidad</span>
-              <span>📚 Aprendizaje</span>
-            </div>
-          </div>
-
-          <div class="usecase-card">
-            <h3>3. Redactar mensaje profesional</h3>
-            <p>Correo o WhatsApp formal sin sonar frío.</p>
-            <div class="prompt-snippet">
-              Tú eres un asistente de redacción profesional.<br />
-              Necesito que redactes un mensaje formal pero cercano para enviar por WhatsApp a [persona/rol].<br />
-              Objetivo del mensaje: [explica el objetivo].<br /><br />
-              Estructura el texto así:<br />
-              - Saludo inicial breve.<br />
-              - Contexto en 2–3 líneas.<br />
-              - Solicitud clara en 1–2 frases.<br />
-              - Cierre cordial.<br /><br />
-              Dame 2 versiones: una más directa y otra más diplomática.
-            </div>
-            <div class="usecase-meta">
-              <span>Uso: trabajo / clientes</span>
-              <span>💼 Profesional</span>
-            </div>
-          </div>
-
-          <div class="usecase-card">
-            <h3>4. Diseñar ideas y planes</h3>
-            <p>Cuando necesitas lluvia de ideas pero bien aterrizada.</p>
-            <div class="prompt-snippet">
-              Tú eres un consultor creativo y práctico.<br />
-              Quiero generar ideas para [proyecto o meta].<br /><br />
-              Tu tarea es:<br />
-              - Proponer 10 ideas, ordenadas de más sencilla a más ambiciosa.<br />
-              - Para cada idea, indica: beneficio principal, dificultad (1–5) y primer paso concreto.<br />
-              - Luego recomienda las 3 mejores pensando en poco tiempo y pocos recursos.<br /><br />
-              Respóndeme en formato tabla + una mini conclusión final.
-            </div>
-            <div class="usecase-meta">
-              <span>Uso: proyectos / negocios</span>
-              <span>🚀 Estrategia</span>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <!-- ERRORES Y QUIZ -->
-      <article class="panel" id="practica">
-        <h2>Errores típicos al hablar con la IA + mini quiz</h2>
-        <p>
-          Si algo no sale como quieres, casi siempre es por uno de estos motivos:
-        </p>
-
-        <ul style="font-size:0.85rem; margin-top:4px;">
-          <li>Prompt demasiado corto: “Explícame esto” sin más detalles.</li>
-          <li>No aclarar el objetivo real: ¿quieres resumir, decidir, entender, crear?</li>
-          <li>No pedir formato específico: terminas con texto plano difícil de usar.</li>
-          <li>No corregir ni iterar: la primera respuesta rara vez es la definitiva.</li>
-        </ul>
-
-        <div class="quiz-item">
-          <div><strong>Pregunta:</strong> ¿Cuál de estos prompts crees que dará el mejor resultado?</div>
-          <div class="quiz-options">
-            <div class="quiz-option" data-correct="false" onclick="quizRespuesta(this)">
-              <span class="label">A) “Explícame qué es la ansiedad.”</span>
-              <span>🤔</span>
-            </div>
-            <div class="quiz-option" data-correct="true" onclick="quizRespuesta(this)">
-              <span class="label">
-                B) “Tú eres un psicólogo que explica en lenguaje sencillo.
-                Explícame qué es la ansiedad en máximo 10 líneas, usando
-                ejemplos cotidianos y un tono tranquilizador.”
-              </span>
-              <span>✅</span>
-            </div>
-            <div class="quiz-option" data-correct="false" onclick="quizRespuesta(this)">
-              <span class="label">C) “Dame info de la ansiedad, lo que sea.”</span>
-              <span>😵</span>
-            </div>
-          </div>
-          <div class="quiz-feedback" id="quizFeedback">
-            Haz clic en una opción para ver la explicación.
-          </div>
-        </div>
-      </article>
-    </section>
-  </main>
-
-  <footer>
-    Playbook de Prompting IA — Úsalo como base y luego ajusta cada prompt a tu estilo.
-  </footer>
-
-  <script>
-    // Scroll suave a secciones
-    function scrollToSection(id) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    // Tabs fundamentos
-    const tabButtons = document.querySelectorAll(".tab-btn");
-    const tabContents = document.querySelectorAll(".tab-content");
-
-    tabButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const target = btn.getAttribute("data-tab");
-
-        tabButtons.forEach((b) => b.classList.remove("active"));
-        tabContents.forEach((c) => c.classList.remove("active"));
-
-        btn.classList.add("active");
-        document.getElementById(target).classList.add("active");
-      });
-    });
-
-    // Constructor de prompts
-    function generarPromptCompleto() {
-      const rol = document.getElementById("rol").value.trim();
-      const objetivo = document.getElementById("objetivo").value.trim();
-      const contexto = document.getElementById("contexto").value.trim();
-      const formato = document.getElementById("formato").value.trim();
-      const tono = document.getElementById("tono").value.trim();
-      const restricciones = document.getElementById("restricciones").value.trim();
-
-      let prompt = "";
-
-      if (rol) {
-        prompt += rol.endsWith(".") ? rol + "\n\n" : rol + ".\n\n";
-      } else {
-        prompt += "Tú eres un asistente experto y claro.\n\n";
-      }
-
-      if (objetivo) {
-        prompt += "Tu objetivo es: " + objetivo + ".\n";
-      }
-
-      if (contexto) {
-        prompt += "Contexto: " + contexto + "\n";
-      }
-
-      if (formato) {
-        prompt += "Formato de respuesta: " + formato + "\n";
-      }
-
-      if (tono) {
-        prompt += "Estilo / tono esperado: " + tono + "\n";
-      }
-
-      if (restricciones) {
-        prompt += "Restricciones adicionales: " + restricciones + "\n";
-      }
-
-      prompt += "\nSi necesitas aclarar algo antes de responder, hazme 1–2 preguntas breves.";
-
-      document.getElementById("promptOutput").textContent =
-        prompt || "Completa al menos el objetivo para construir un prompt.";
-    }
-
-    function copiarPrompt() {
-      const text = document.getElementById("promptOutput").textContent.trim();
-      if (!text) return;
-      navigator.clipboard
-        .writeText(text)
-        .then(() => {
-          alert("Prompt copiado al portapapeles ✅");
-        })
-        .catch(() => {
-          alert("No se pudo copiar automáticamente. Selecciona el texto y cópialo.");
-        });
-    }
-
-    function limpiarFormulario() {
-      ["rol", "objetivo", "contexto", "formato", "tono", "restricciones"].forEach(
-        (id) => (document.getElementById(id).value = "")
-      );
-      document.getElementById("promptOutput").textContent =
-        "Aquí aparecerá tu prompt construido paso a paso.";
-    }
-
-    // Analizador de prompts (heurística sencilla)
-    function analizarPrompt() {
-      const prompt = document.getElementById("promptAnalizar").value.trim();
-      const result = document.getElementById("analysisResult");
-
-      if (!prompt) {
-        result.innerHTML = "Escribe o pega un prompt para poder analizarlo.";
-        return;
-      }
-
-      const feedback = [];
-      let score = 0;
-
-      const length = prompt.length;
-      if (length < 40) {
-        feedback.push(
-          "<span class='badge-bad'>• Muy corto:</span> agrega objetivo, contexto y formato."
-        );
-      } else if (length < 120) {
-        feedback.push(
-          "<span class='badge-warn'>• Algo breve:</span> puedes mejorar si agregas contexto o ejemplos."
-        );
-        score += 1;
-      } else {
-        feedback.push(
-          "<span class='badge-ok'>• Buena longitud:</span> pareces dar suficiente detalle."
-        );
-        score += 2;
-      }
-
-      if (/bot|agente/i.test(prompt) && !/tú /i.test(prompt)) {
-        feedback.push(
-          "<span class='badge-warn'>• Hablas del “bot” en tercera persona:</span> prueba cambiando a “tú vas a…” para dar órdenes directas."
-        );
-      } else if (/tú /i.test(prompt)) {
-        feedback.push(
-          "<span class='badge-ok'>• Usas segunda persona:</span> eso ayuda a que la IA entienda acciones concretas."
-        );
-        score += 1;
-      }
-
-      if (!/formato|lista|tabla|puntos|mensaje|guion|tabla/i.test(prompt)) {
-        feedback.push(
-          "<span class='badge-warn'>• No se ve un formato claro:</span> indica si quieres lista, tabla, puntos, mensaje de WhatsApp, etc."
-        );
-      } else {
-        feedback.push(
-          "<span class='badge-ok'>• Formato definido:</span> buena práctica para recibir algo que puedas usar directo."
-        );
-        score += 1;
-      }
-
-      if (!/contexto|situación|estoy/i.test(prompt)) {
-        feedback.push(
-          "<span class='badge-warn'>• Falta contexto explícito:</span> menciona para qué lo usarás o quién lo va a leer."
-        );
-      } else {
-        score += 1;
-      }
-
-      let nivel = "";
-      if (score <= 1) nivel = "Básico";
-      else if (score <= 3) nivel = "Intermedio";
-      else nivel = "Avanzado";
-
-      result.innerHTML =
-        "<strong>Nivel estimado de tu prompt: " +
-        nivel +
-        "</strong><br/><ul><li>" +
-        feedback.join("</li><li>") +
-        "</li></ul>";
-    }
-
-    // Quiz
-    function quizRespuesta(optionEl) {
-      const correct = optionEl.getAttribute("data-correct") === "true";
-      const siblings = optionEl.parentElement.querySelectorAll(".quiz-option");
-      siblings.forEach((s) => {
-        s.classList.remove("correct", "incorrect");
-      });
-
-      optionEl.classList.add(correct ? "correct" : "incorrect");
-
-      const feedbackEl = document.getElementById("quizFeedback");
-      if (correct) {
-        feedbackEl.innerHTML =
-          "<span class='badge-ok'>Correcto:</span> define rol, objetivo, estilo y límites. Eso permite a la IA ajustar mejor su respuesta.";
-      } else {
-        feedbackEl.innerHTML =
-          "<span class='badge-bad'>No del todo:</span> falta aclarar el contexto, el tipo de explicación y el tono deseado.";
-      }
-    }
-  </script>
 </body>
 </html>
